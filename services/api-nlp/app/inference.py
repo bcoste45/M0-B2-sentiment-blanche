@@ -15,10 +15,11 @@ en argument.
 """
 from __future__ import annotations
 
-# DECISION: (à écrire avant de coder, en français)
-#   Règle retenue : ... étoiles -> négatif / ... -> neutre / ... -> positif
-#   Argument métier 1 : ...
-#   Argument métier 2 : ...
+# DECISION: 
+#   Règle retenue : Symétrie
+# 1-2 étoiles -> négatif / 3 -> neutre / 4-5 -> positif
+#   Argument métier 1 : Certaines personnes ne mettront jamais 5 étoiles même si tout est parfait (ils mettraient 4.999999 si possible), il vaut donc mieux considérer 4 comme positif; de même pour le négatif.
+#   Argument métier 2 : Avoir une symétrie permet d'avoir une balance entre les positifs et les négatifs, et ainsi de voir de quel côté elle penche.
 
 import time
 from typing import Any
