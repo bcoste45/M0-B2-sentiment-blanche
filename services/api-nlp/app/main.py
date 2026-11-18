@@ -125,9 +125,6 @@ def info() -> InfoOut:
 @app.post("/predict", response_model=SentimentOut, status_code=status.HTTP_200_OK)
 def predict(payload: ReviewIn) -> SentimentOut:
     """Classifie une review FR en `négatif / neutre / positif`.
-
-    À compléter par l'apprenant — Tâche 3 du brief. Au clone, l'endpoint
-    renvoie 501 Not Implemented.
     """
     # Pas de check `model_loaded` ici : politique fail-fast — si le pipeline
     # ne s'est pas chargé, le conteneur a crashé au démarrage et on n'arrive
@@ -140,10 +137,5 @@ def predict(payload: ReviewIn) -> SentimentOut:
 
     # TODO Tâche 3 — Appeler inference.predict_sentiment(). (logging: task 5)
     # Pour l'instant, on signale que ce n'est pas implémenté.
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail=(
-            "Endpoint /predict pas encore implémenté. Voir Tâche 3 du brief "
-            "et `app/inference.py`."
-        ),
-    )
+    return inference.predict_sentiment(state["pipeline"], payload.texte, MODEL_NAME)
+    

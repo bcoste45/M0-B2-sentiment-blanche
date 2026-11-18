@@ -30,10 +30,6 @@ from app.schemas import Sentiment, SentimentOut
 def map_stars_to_sentiment(star_label: str) -> Sentiment:
     """Mappe un label 5 étoiles ('1 star', ..., '5 stars') en 3 classes métier.
 
-    À compléter par l'apprenant. **Le choix du mapping est un arbitrage
-    métier**, pas une recette imposée : plusieurs découpages sont valides
-    (cf. mini-cours `02_HuggingFace_Transformers_essentiel.md`, section
-    "Justification du seuil de mapping").
 
     Ton travail : proposer **ton** mapping et **le justifier** dans le
     commentaire `# DECISION:` en haut de ce fichier, puis dans
@@ -49,8 +45,15 @@ def map_stars_to_sentiment(star_label: str) -> Sentiment:
     Raises:
         ValueError: si `star_label` n'est pas dans le format attendu.
     """
-    # TODO Tâche 3 — implémenter le mapping décrit dans `# DECISION:`.
-    raise NotImplementedError("Compléter `map_stars_to_sentiment` (Tâche 3).")
+    if star_label == '1 star' or star_label=='2 stars':
+        return "négatif"
+    elif star_label=='3 stars':
+        return "neutre"
+    elif star_label=='4 stars' or star_label=='5 stars':
+        return "positif"
+    else :
+        raise ValueError("Le star_label '"+star_label+"' n'est pas dans le format attendu")
+    
 
 
 def predict_sentiment(pipeline: Any, text: str, model_name: str) -> SentimentOut:
@@ -65,16 +68,19 @@ def predict_sentiment(pipeline: Any, text: str, model_name: str) -> SentimentOut
     Returns:
         SentimentOut avec sentiment 3 classes, scores 5★ bruts, et latence ms.
     """
-    # TODO Tâche 3 — compléter :
-    #
-    # 1. Mesurer le temps d'inférence (time.perf_counter() avant/après).
-    # 2. Appeler `raw = pipeline(text)` (sans argument en plus : le pipeline
-    #    est déjà construit avec `top_k=None` dans `main.py`). `raw` est une
-    #    liste contenant une liste de 5 dicts {'label', 'score'} : les
-    #    probabilités sont dans `raw[0]`.
-    # 3. Construire `scores_5_stars: dict[str, float]` à partir de `raw[0]`.
-    # 4. Appliquer la règle écrite dans `# DECISION:` pour obtenir la classe
-    #    métier : étoile la plus probable (puis `map_stars_to_sentiment`),
-    #    ou somme des probabilités par groupe d'étoiles.
-    # 5. Renvoyer un `SentimentOut(...)`.
-    raise NotImplementedError("Compléter `predict_sentiment` (Tâche 3).")
+    t0 = time.perf_counter()
+    raw = pipeline(text)
+    tps_inf = (time.perf_counter() - t0)*1000 #en ms
+
+    scores_5_stars = {}
+    sentiments = {"négatif":0,"neutre":0,"positif":0}
+    for l in raw[0]:
+        scores_5_stars[l['label']] = round(l['score'],5)
+        sentiments[map_stars_to_sentiment(l['label'])] += round(l['score'],5)
+
+    return SentimentOut(
+        sentiment= max(sentiments, key=sentiments.get),
+        scores_5_stars=scores_5_stars,
+        model_name=model_name,
+        latence_ms=tps_inf
+    )
