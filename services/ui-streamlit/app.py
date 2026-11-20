@@ -30,6 +30,13 @@ st.set_page_config(
     layout="centered",
 )
 
+with httpx.Client(base_url=API_URL, timeout=2) as client:
+    try:
+        healthy = client.get("/health").json().get("model_loaded")
+        st.sidebar.success("✅ API joignable" if healthy else "⚠️ API en chargement")
+    except httpx.HTTPError:
+        st.sidebar.error("❌ API down")
+
 st.title("🍆 Aubergine Hôtels — qualification du sentiment")
 st.caption(
     "Démo interne : copie une review FR, le service NLP renvoie son sentiment "
@@ -56,6 +63,8 @@ if st.button("Analyser", type="primary", disabled=not texte.strip()):
         st.error("🔌 Connexion refusée : l'API tourne-t-elle ?")
     except httpx.HTTPStatusError as exc:
         st.error(f"❌ HTTP {exc.response.status_code} : {exc.response.text}")
+    except httpx.HTTPError as err:
+        st.error(f"Erreur {err.response.status_code} : {err.response.text}")
     else:
         data = response.json()
         # Affiche le sentiment dans un encadré coloré (st.success / st.warning / st.error selon la classe).
