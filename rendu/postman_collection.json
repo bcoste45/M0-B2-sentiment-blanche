@@ -1,0 +1,236 @@
+{
+  "info": {
+    "_postman_id": "28fff567-28c9-4138-8bdc-c11688593a98",
+    "name": "M0-B2 Aubergine Hôtels — sentiment FR",
+    "description": "Collection Postman de départ pour le brief M0-B2. Les 5 requêtes fournies (`/health`, `/info` et 3 requêtes `/predict`) sont préremplies. Complète la collection avec au moins 3 requêtes ajoutées : un texte trop long (plus de 2000 caractères, 422 attendu), un avis piégeux de ton choix, et un autre cas de ton choix.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "60378270",
+    "_collection_link": "https://go.postman.co/collection/60378270-28fff567-28c9-4138-8bdc-c11688593a98?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "GET /health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Statut du service. `model_loaded:true` quand le modèle CamemBERT est prêt."
+      },
+      "response": []
+    },
+    {
+      "name": "GET /info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/info",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "info"
+          ]
+        },
+        "description": "Métadonnées du service : nom du modèle, classes natives 5★, classes cibles 3 (négatif/neutre/positif), max length texte."
+      },
+      "response": []
+    },
+    {
+      "name": "POST /predict — review positive",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texte\": \"Personnel charmant, chambre impeccable, petit-déjeuner copieux. On reviendra !\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "predict"
+          ]
+        },
+        "description": "Cas valide attendu : sentiment = 'positif'."
+      },
+      "response": []
+    },
+    {
+      "name": "POST /predict — review négative",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texte\": \"Accueil glacial à la réception, chambre froide et bruyante, nous ne reviendrons pas.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "predict"
+          ]
+        },
+        "description": "Cas valide attendu : sentiment = 'négatif'."
+      },
+      "response": []
+    },
+    {
+      "name": "POST /predict — texte vide (422 attendu)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texte\": \"\"\n}",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "predict"
+          ]
+        },
+        "description": "Validation Pydantic : texte vide doit renvoyer 422."
+      },
+      "response": []
+    },
+    {
+      "name": "POST /predict — texte trop long (422 attendu)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texte\": \"Ceci est mon avis personnel de mon séjour dans ce magnifique hôtel qui peut néanmoins nous réserver beaucoup de surprises bonnes comme mauvaises. La vue est très belle mais quand on se penche, on voit les poubelles du voisin. Le petit déjeuner est excellent et varié, mais les autres repas le sont moins. Lundi des patates, Mardi des patates, Mercredi des patates, Jeudi des patates aussi. Si vous aimez les légumes, aller voir ailleurs. Les draps sont douillets et l'oreiller très moelleux, la chambre est très propre. Les propiétaires sont accueillants mais très, très, très bavards. La météo est capricieuse (même si on n'y peut rien), Lundi : beau soleil, Mardi: grand soleil, Mercredi: orage soudain et très violent, Jeudi : du vent à en décorner les taureaux, impossible de sortir dehors, plus une panne de courant, Vendredi : le retour du soleil, mais avec une grosse chaleur. Pas contre, ils n'acceptent pas les animaux, c'est bien dommage, nous avons dû laisser Médor à la maison (j'espère qu'il n'a rien cassé).Ceci est mon avis personnel de mon séjour dans ce magnifique hôtel qui peut néanmoins nous réserver beaucoup de surprises bonnes comme mauvaises. La vue est très belle mais quand on se penche, on voit les poubelles du voisin. Le petit déjeuner est excellent et varié, mais les autres repas le sont moins. Lundi des patates, Mardi des patates, Mercredi des patates, Jeudi des patates aussi. Si vous aimez les légumes, aller voir ailleurs. Les draps sont douillets et l'oreiller très moelleux, la chambre est très propre. Les propiétaires sont accueillants mais très, très, très bavards. La météo est capricieuse (même si on n'y peut rien), Lundi : beau soleil, Mardi: grand soleil, Mercredi: orage soudain et très violent, Jeudi : du vent à en décorner les taureaux, impossible de sortir dehors, plus une panne de courant, Vendredi : le retour du soleil, mais avec une grosse chaleur. Pas contre, ils n'acceptent pas les animaux, c'est bien dommage, nous avons dû laisser Médor à la maison (j'espère qu'il n'a rien cassé).\"\n}",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "predict"
+          ]
+        },
+        "description": "Validation Pydantic : texte trop long doit renvoyer 422."
+      },
+      "response": []
+    },
+    {
+      "name": "POST /predict — avis piégeux (422 attendu)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texte\": \"On a passé un séjour qu'on n'oubliera pas. La climatisation en panne en plein août, sympa.\"\n}",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "predict"
+          ]
+        },
+        "description": "Cas valide attendu : sentiment = 'négatif'."
+      },
+      "response": []
+    },
+    {
+      "name": "POST /predict — texte neutre positif (422 attendu)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texte\": \"ça passe\"\n}",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "predict"
+          ]
+        },
+        "description": "Cas valide attendu : sentiment = 'neutre'."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    }
+  ]
+}
