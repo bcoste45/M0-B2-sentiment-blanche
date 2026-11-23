@@ -88,3 +88,50 @@ with st.sidebar:
         "- Les probas 5★ brutes\n"
         "- Un message d'erreur clair si l'API tombe"
     )
+
+#-----------
+st.markdown("""---""")
+st.subheader("Recherche des sentiments mals prédits du fichier sample_reviews.csv")
+import csv 
+from io import StringIO, TextIOWrapper
+import pandas as pd
+"""
+UIStreamlit pour vérifier que /predict donne bien meme sentiment prevu pour les données de sample_review.csv (id,hotel,texte,note_client,sentiment_attendu)
+
+"""
+filename = ""
+uploaded_file = st.file_uploader("Insérer sample_reviews.csv", type="csv", disabled=(filename == "sample_reviews.csv"))
+if uploaded_file is not None:
+    filename = uploaded_file.name
+    if filename != "sample_reviews.csv":
+        st.write("Ce n'est pas sample_reviews.csv.")
+    else : 
+        for index, row in pd.read_csv(uploaded_file).iterrows():
+            avis_txt = row['texte']
+            sentiment_attendu = row['sentiment_attendu']
+            st.write(
+                f"id = {row['id']}\n\n"
+                f"avis = '{avis_txt}'"
+                )
+            try :
+                # Appel POST avec httpx
+                response = httpx.post(f"{API_URL}/predict", json={"texte": avis_txt}, timeout=10)
+                response.raise_for_status()            
+                # En cas d'erreur réseau ou HTTP >= 500 : affiche un message d'erreur clair via st.error("...").
+            except httpx.TimeoutException:
+                st.error("⏱️  Timeout : l'API a mis plus de 10 s.")
+            except httpx.ConnectError:
+                st.error("🔌 Connexion refusée : l'API tourne-t-elle ?")
+            except httpx.HTTPStatusError as exc:
+                st.error(f"❌ HTTP {exc.response.status_code} : {exc.response.text}")
+            except httpx.HTTPError as err:
+                st.error(f"Erreur {err.response.status_code} : {err.response.text}")
+            else:
+                data = response.json()
+                if data['sentiment']==sentiment_attendu :            
+                    st.info(f"sentiment_predit ({data['sentiment']}) == sentiment_attendu ({sentiment_attendu}) ? {(data['sentiment']==sentiment_attendu)}")  
+                else :
+                    st.error(f"sentiment_predit ({data['sentiment']}) == sentiment_attendu ({sentiment_attendu}) ? {(data['sentiment']==sentiment_attendu)}")
+            st.write("*******")
+
+
