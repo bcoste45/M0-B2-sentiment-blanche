@@ -1,28 +1,7 @@
-# M0-B2 — Squelette repo (sentiment FR · stack `docker compose`)
+# M0-B2 — Déployer une IA NLP packagée (sentiment FR chez Aubergine Hôtels)
 
-> **Repo template GitHub.** Une seule personne par binôme clique sur
-> **« Use this template »** → **Create a new repository** → nomme le repo
-> `M0-B2-sentiment-<prenom1>-<prenom2>` sur son compte GitHub, puis invite
-> l'autre (Settings → Collaborators). Ne faites pas de fork.
-> Qui crée le repo : mettez-vous d'accord, à l'oral ou par écrit. À défaut,
-> c'est la personne dont le prénom vient en premier dans l'ordre alphabétique.
-> L'autre lui donne son identifiant GitHub, à l'oral ou par message.
-> 🧍 Poste solo : `M0-B2-sentiment-<prenom>`, sans invitation.
-> Repo public, ou privé avec la formatrice invitée en lecture (son
-> identifiant GitHub est donné sur Simplonline).
->
-> Dans ce README, `<prenom>` = ton prénom en minuscules, sans accent, et
-> `<user>` = le compte GitHub de la personne qui a créé le repo.
-
-**Tout s'exécute dans Docker : ce brief ne demande aucun environnement virtuel
-Python sur ta machine.**
-
-Brief **M0-B2 « Déployer une IA NLP packagée — sentiment FR chez Aubergine
-Hôtels »**, 8 h en 3 temps : séance 1 (tâches 1 à 4 ; 3 h 45, dont 3 h 05 de
-tâches, le reste couvre le point d'étape, la pull request et la pause),
-travail individuel (livrables A à D), séance 2 (tâches 5 et 6).
-L'énoncé complet est publié sur **Simplonline** : c'est lui qui fait foi pour
-les livrables et les critères. Ce README est votre tableau de bord au quotidien.
+La chaîne d'hôtels Aubergine Hôtels reçoit des avis, elle veut pouvoir classifier ces avis en 3 classes sentiment (négatif, neutren positif) afin de pouvoir analyser les négatifs et améliorer leur services.  
+On utilise le modèle pré-entraîné camemBERT pour avoir une évaluation en étoiles des avis puis on la transforme en sentiment.  
 
 ---
 
@@ -58,62 +37,24 @@ curl http://localhost:8000/health        # API NLP
 > suivants : `api-nlp` passe `healthy` en moins d'une minute grâce au cache `models/`.
 
 ---
-
-## 🌿 Travailler à deux (ou seul·e) — règles Git
-
-**Seul `main` est corrigé.** Un travail resté sur une branche n'existe pas
-pour la correction.
-
+Pour voir les services Docker qui tournent et leur état de santé :
 ```bash
-# Au quotidien, sur TA branche
-git switch <prenom>
-git add <fichiers> && git commit -m "feat(api): map 5 stars to 3 classes"
-git push -u origin <prenom>
-
-# Intégrer dans main : ouvre une Pull Request sur GitHub
-#   base = main  ←  compare = <prenom>   puis « Merge pull request »
-# (en binôme, l'autre relit avant de merger ; 🧍 poste solo : tu merges ta propre PR)
-
-# Récupérer ce que l'autre a mergé (🧍 poste solo : ces trois lignes servent
-# seulement à mettre ta branche à jour avec `main`)
-git switch main && git pull
-git switch <prenom> && git merge main
-git push
-# Refais ces trois lignes avant d'ouvrir chaque Pull Request.
+docker compose ps
+NAME                IMAGE                                                                     COMMAND                  SERVICE        CREATED       STATUS                 PORTS
+m0b2-api-nlp        m0-b2-sentiment-blanche-api-nlp                                           "uvicorn app.main:ap…"   api-nlp        3 hours ago   Up 3 hours (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+m0b2-ui-streamlit   sha256:b04eba1c08fee8606c10ff026ce4cdcb03fb9557a9344b31b459def7074780fc   "streamlit run app.p…"   ui-streamlit   5 hours ago   Up 5 hours             0.0.0.0:8501->8501/tcp, [::]:8501->8501/tcp``
 ```
-
-- Une PR vers `main` **au minimum à la fin de chaque séance** et avant le rendu.
-- Tes livrables individuels vont dans **`rendu/<prenom>/`** : chacun a son
-  dossier, donc pas de conflit.
-- Le `README.md` de la racine est commun : **une seule personne le modifie**,
-  l'autre lui envoie son texte. Qui : mettez-vous d'accord, à l'oral ou par
-  écrit. À défaut, c'est la personne dont le prénom vient en premier dans
-  l'ordre alphabétique. 🧍 Poste solo : tu le modifies seul·e.
-- Ne commite jamais directement sur `main`.
-- Messages de commit : `type(scope): description`.
-- Si `git merge main` annonce un conflit : ouvre le fichier, garde ce qu'il
-  faut entre `<<<<<<<` et `>>>>>>>`, supprime ces marqueurs, puis
-  `git add <fichier> && git commit && git push`. Si tu bloques (ou si tu as
-  commité sur `main` par erreur) : ne force rien, demande dans le fil Discord
-  du brief.
-
----
+*On voit ici que le service api-nlp a bien un status healthy*
 
 ## 🧠 Modèle utilisé
 
 **`cmarkea/distilcamembert-base-sentiment`** — DistilCamemBERT FR, 68 M
 paramètres, ~270 Mo.
 
-⚠️ Le modèle sort **5 étoiles** (`'1 star'` … `'5 stars'`). Le métier
-(Aubergine Hôtels) veut **3 classes** (`négatif/neutre/positif`).
+⚠️ Le modèle sort **5 étoiles** (`'1 star'` … `'5 stars'`). 
+Le métier (Aubergine Hôtels) veut **3 classes** (`négatif/neutre/positif`).
+On adopte un mapping symétrique regroupé, ainsi 4-5 étoile = positif, 3 étoiles = neutre et 1-2 étoiles = négatif; on cumule les probabiltés par étoiles pour chaque sentiment. 
 
-→ Tu dois implémenter le **mapping 5★ → 3 classes** dans
-`services/api-nlp/app/inference.py`. **C'est le geste cœur de ce brief**
-(adaptation d'un service au format métier — C6 N2). Écris ta règle dans le
-commentaire `# DECISION:` **avant** de coder. Il n'y a pas de bonne réponse :
-ce qui compte, ce sont tes 2 arguments métier.
-
----
 
 ## 📁 Structure du repo
 
@@ -121,6 +62,7 @@ ce qui compte, ce sont tes 2 arguments métier.
 M0-B2-sentiment-<prenom1>-<prenom2>/
 ├── docker-compose.yml             ← 2 services + healthcheck api-nlp
 ├── .env.example
+├── .env
 ├── services/
 │   ├── api-nlp/                   ← FastAPI + transformers
 │   │   ├── Dockerfile
@@ -130,7 +72,8 @@ M0-B2-sentiment-<prenom1>-<prenom2>/
 │   │   │   ├── schemas.py         ← Pydantic ReviewIn / SentimentOut
 │   │   │   └── inference.py       ← TON CODE + mapping 5→3
 │   │   └── tests/
-│   │       └── test_health.py     ← 1 test pytest qui passe (tu ajoutes test_predict.py)
+│   │       └── test_health.py     ← 1 test pytest qui passe 
+│   │       └── test_predict.py    ← 7 tests pytest qui passent 
 │   └── ui-streamlit/              ← UI utilisateur
 │       ├── Dockerfile
 │       ├── requirements.txt
@@ -140,9 +83,8 @@ M0-B2-sentiment-<prenom1>-<prenom2>/
 ├── postman/
 │   └── M0-B2_collection.json      ← point de départ de ta collection
 ├── rendu/
-│   └── <prenom>/                  ← TES livrables individuels (à créer)
-│       ├── ANALYSE.md             ← schéma Mermaid + reviews mal classées + mapping
-│       └── postman_collection.json
+│   ├── ANALYSE.md             ← schéma Mermaid + reviews mal classées + mapping
+│   └── postman_collection.json
 ├── ressources/                    ← 📚 mini-cours d'appui (lecture juste-à-temps)
 │   ├── 01_DockerCompose_essentiel.md
 │   ├── 02_HuggingFace_Transformers_essentiel.md
@@ -153,7 +95,7 @@ M0-B2-sentiment-<prenom1>-<prenom2>/
 │   ├── liens_officiels.md
 │   └── README.md
 ├── .gitignore
-└── README.md (ce fichier — à compléter : ajoutez en haut 5 à 10 lignes sur votre service et les 3 preuves ; gardez le reste)
+└── README.md (ce  fichier — à compléter : ajoutez en haut 5 à 10 lignes sur votre service et les 3 preuves ; gardez le reste)
 ```
 
 ---
@@ -164,102 +106,108 @@ M0-B2-sentiment-<prenom1>-<prenom2>/
 |---|---|---|
 | `GET /health` | ✅ fonctionnel | rien |
 | `GET /info` | ✅ fonctionnel | rien |
-| `POST /predict` | ❌ 501 Not Implemented | implémenter (avec mapping 5→3) |
+| `POST /predict` | ✅ fonctionnel | fournir un json avec du texte |
 
 L'UI Streamlit est lancée mais affiche **« API non branchée »** tant que tu
 n'as pas branché l'appel HTTP dans `services/ui-streamlit/app.py`.
 
 ---
-
-## 🧭 Démarche attendue
-
-### Séance 1 — en binôme (ou poste solo)
-
-Après la tâche 2, la formatrice poste 3 questions dans le fil
-Discord du brief. Y répondre est facultatif, à l'oral ou dans le fil, jusqu'à
-la fin de la séance.
-
-| # | Étape | Mini-cours | Durée |
-|---|---|---|---|
-| 1 | Créer le repo, démarrer la stack | (ce README) | 30 min |
-| 2 | Lire le squelette + la fiche du modèle, **écrire `# DECISION:`** | — | 30 min |
-| 3 | Implémenter `/predict` + **mapping 5★ → 3 classes** | [`02_HuggingFace_Transformers`](./ressources/02_HuggingFace_Transformers_essentiel.md) | 1 h 15 |
-| 4 | Brancher l'UI Streamlit à l'API | [`03_Streamlit`](./ressources/03_Streamlit_essentiel.md) + [`04_API_Integration`](./ressources/04_API_Integration_essentiel.md) | 50 min |
-| ✔ | PR vers `main` | — | — |
-
-**Après chaque modification de code : `docker compose up --build` (sinon le conteneur exécute l'ancienne version).** Voir [`01_DockerCompose`](./ressources/01_DockerCompose_essentiel.md).
-
-En binôme : l'un sur l'étape 3, l'autre sur l'étape 4, puis échange à
-mi-séance. Mécanique d'échange en 3 lignes :
-
-1. chacun pousse sa branche (`git push -u origin <prenom>`) et ouvre une pull request vers `main` ;
-2. l'autre la fusionne ;
-3. chacun fait `git switch main && git pull`, puis `git switch <prenom> && git merge main`.
-
-Explication mutuelle : à l'oral ou par écrit (commentaire de pull request), au choix.
-Étape 4 : tant que `/predict` répond 501, teste d'abord l'affichage du message
-d'erreur ; le résultat nominal se teste après la fusion de l'étape 3. Pour
-tester le message « API arrêtée » : `docker compose stop api-nlp`, recharge
-l'interface, puis `docker compose start api-nlp`.
-🧍 Poste solo : étape 3 puis étape 4, pas d'échange.
-
-### Entre les deux séances — individuel, dans `rendu/<prenom>/`
-
-| # | Livrable | Priorité | Durée |
-|---|---|---|---|
-| A | `ANALYSE.md` partie 1 : **schéma Mermaid** + comment lancer | 🔴 prioritaire | 1 h |
-| B | `ANALYSE.md` partie 2 : **≥ 3 reviews mal classées** + explication | 🔴 prioritaire | 1 h |
-| C | `postman_collection.json` (les 5 requêtes fournies + au moins 3 ajoutées, dont un texte trop long → 422 et un avis piégeux de ton choix) | 🟠 important | 45 min |
-| D | `ANALYSE.md` partie 3 : justification du mapping (½ page) | 🟠 important | 15 min |
-
-### Séance 2 — finitions
-
-| # | Étape | Mini-cours | Durée |
-|---|---|---|---|
-| 5 | Logging Loguru (texte tronqué : `texte[:80]`) | [`05_Loguru`](./ressources/05_Loguru_essentiel.md) | 30 min |
-| 6 | Tests pytest `/predict` (≥ 3) | [`06_Pytest_API`](./ressources/06_Pytest_API_essentiel.md) | 35 min |
-| ✔ | 3 preuves dans le README + PR vers `main` + lien sur Simplonline | — | — |
-| E/F/G | **Bonus** : healthcheck personnalisé avec plus de tentatives · `/predict/batch` · « pourquoi pas un LLM ? » | — | — |
-
-**Après chaque modification de code : `docker compose up --build` (sinon le conteneur exécute l'ancienne version).** Voir [`01_DockerCompose`](./ressources/01_DockerCompose_essentiel.md).
-
-Cf. [`./ressources/README.md`](./ressources/README.md) pour le détail.
-
+```bash
+curl -X 'GET' \
+  'http://localhost:8000/health' \
+  -H 'accept: */*'
+```
+Réponse :
+```json
+{
+  "status": "ok",
+  "model_loaded": true
+}
+```
 ---
 
-## 🎯 Ce qui compte vraiment
-
-1. **Une stack qui tourne** avec healthcheck `healthy`.
-2. **Le mapping 5★ → 3 classes implémenté et justifié** (le geste C6 N2).
-3. **L'UI Streamlit branchée à l'API** via le réseau docker interne :
-   l'interface appelle l'API via `API_URL` (valeur `http://api-nlp:8000` dans
-   `docker-compose.yml`), pas `localhost`.
-4. **≥ 3 tests pytest qui passent** depuis le conteneur.
-5. **Ton `rendu/<prenom>/ANALYSE.md`** : schéma Mermaid, reviews mal classées,
-   justification du mapping.
-6. **Tout est dans `main`.**
-
-### Les 3 preuves à coller dans ce README (à la place d'une démo)
+```bash
+curl -X 'GET' \
+  'http://localhost:8000/info' \
+  -H 'accept: */*Réponse :
+```
+Réponse :
+```json
+{
+  "service": "FastIA Aubergine — sentiment FR",
+  "model_name": "cmarkea/distilcamembert-base-sentiment",
+  "native_classes": [
+    "1 star",
+    "2 stars",
+    "3 stars",
+    "4 stars",
+    "5 stars"
+  ],
+  "target_classes": [
+    "négatif",
+    "neutre",
+    "positif"
+  ],
+  "max_text_length": 2000
+}
+```
+   ---
 
 ```bash
-docker compose ps                                  # api-nlp (healthy)
-curl -X POST http://localhost:8000/predict \
+curl -X 'POST' \
+  'http://localhost:8000/predict' \
+  -H 'accept: */*' \
   -H 'Content-Type: application/json' \
-  -d '{"texte":"Personnel charmant, on reviendra !"}'
-docker compose exec api-nlp pytest -v              # tests PASSED
+  -d '{
+  "texte": "Personnel charmant, chambre impeccable !"
+}'
+```
+Réponse :
+```json
+{
+  "sentiment": "positif",
+  "scores_5_stars": {
+    "5 stars": 0.55489,
+    "4 stars": 0.39403,
+    "3 stars": 0.04447,
+    "2 stars": 0.00493,
+    "1 star": 0.00167
+  },
+  "model_name": "cmarkea/distilcamembert-base-sentiment",
+  "latence_ms": 2147.801705999882
+}
 ```
 
-Sous Windows (PowerShell), cette commande ne passe pas telle quelle : envoie la
-même requête depuis Swagger (`/docs`) ou Postman et colle la réponse.
-
----
-
 ## ✅ Tests & environnement
+L'api api-nlp a 7 tests pytests :
+- un pour GET /heath qui doit retourner un code 200
+- les autres pour POST /predict
+  - un avis positif => code 200 + sentiment prédit = "positif" + bonne structure des score_5_stars
+  - un avis vide => code 422
+  - un avis trop long => code 422
+  - 3 avis issus de sample_reviews.csv avec un sentiment prévu bien prédit => code 200 + sentiment prévu = sentiment prédit
 
 ```bash
-docker compose exec api-nlp pytest -v      # tests dans le conteneur API
-# après avoir ajouté ou modifié un test : docker compose up --build -d
-docker compose ps                          # api-nlp doit être (healthy)
+docker compose exec api-nlp pytest -v
+============================================ test session starts =============================================
+platform linux -- Python 3.11.18, pytest-8.3.4, pluggy-1.7.0 -- /usr/local/bin/python3.11
+cachedir: .pytest_cache
+rootdir: /app
+configfile: pytest.ini
+testpaths: tests
+plugins: asyncio-0.24.0, anyio-4.6.2.post1
+asyncio: mode=Mode.STRICT, default_loop_scope=function
+collected 7 items                                                                                            
+
+tests/test_health.py::test_health_endpoint_returns_200 PASSED                                          [ 14%]
+tests/test_predict.py::test_predict_avis_positif PASSED                                                [ 28%]
+tests/test_predict.py::test_predict_texte_vide_trop_long[] PASSED                                      [ 42%]
+tests/test_predict.py::test_predict_texte_vide_trop_long[Ce texte est vraiment beaucoup trop loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong !] PASSED [ 57%]
+tests/test_predict.py::test_parametre_3_avis_coorects[H\xf4tel d'une m\xe9diocrit\xe9 rare. Bruit de plomberie toute la nuit, et personne pour s'en occuper.-n\xe9gatif] PASSED [ 71%]
+tests/test_predict.py::test_parametre_3_avis_coorects[R\xe9ception agr\xe9able, chambre r\xe9cemment r\xe9nov\xe9e, beau bar \xe0 vins en bas. Tr\xe8s bonne adresse.-positif] PASSED [ 85%]
+tests/test_predict.py::test_parametre_3_avis_coorects[S\xe9jour correct sans plus. La chambre fait son \xe2ge mais reste fonctionnelle pour une nuit.-neutre] PASSED [100%]
+
+============================================= 7 passed in 5.07s ==============================================
 ```
 
 | Variable (`.env`) | Défaut | Usage |
@@ -269,21 +217,3 @@ docker compose ps                          # api-nlp doit être (healthy)
 
 ---
 
-## 🆘 Bloqué·e ?
-
-| Symptôme | À tenter |
-|---|---|
-| `docker compose up` bloqué sur `pulling/building` | Premier démarrage : plusieurs minutes (build puis téléchargement du modèle), patiente |
-| `/predict` renvoie toujours 501 | `inference.py` pas encore complété, **ou image non reconstruite** : relance `docker compose up --build` |
-| `/predict` renvoie `"1 star"` au lieu de `"négatif"` | Mapping 5→3 pas implémenté |
-| L'UI affiche « API non branchée » | Compléter `app.py` dans `services/ui-streamlit/` |
-| `Connection refused` depuis l'UI | `API_URL` = `http://api-nlp:8000` (nom de service), pas `localhost` |
-| `ModuleNotFoundError` | Rebuild : `docker compose build --no-cache api-nlp` |
-| Service `unhealthy` après 2 min | Au premier démarrage, le statut peut passer par `unhealthy` pendant le téléchargement du modèle, puis revenir à `healthy` : attends. Si ça persiste : `docker compose logs api-nlp` (réseau / mémoire / chargement modèle) |
-| Conteneur tué sans message | Mémoire Docker inférieure à 6 Go : augmente-la dans Docker Desktop (au moins 6 Go) |
-
-Logs en temps réel : `docker compose logs -f api-nlp`.
-
-**Demande de l'aide**, à l'oral ou par écrit dans le fil Discord du brief :
-les deux se valent. Par écrit, colle la commande lancée et le message
-d'erreur complet. N'attends pas 30 min sur le même problème.

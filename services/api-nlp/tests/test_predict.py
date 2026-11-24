@@ -42,7 +42,7 @@ def test_predict_texte_vide_trop_long(fixture_client,texte_test) -> None:
     ("Réception agréable, chambre récemment rénovée, beau bar à vins en bas. Très bonne adresse.","positif"),
     ("Séjour correct sans plus. La chambre fait son âge mais reste fonctionnelle pour une nuit.","neutre")
     ])
-def test_parametre_3_avis_coorects(fixture_client, texte_test,sentiment_prevu) -> None:
+def test_parametre_3_avis_corrects(fixture_client, texte_test,sentiment_prevu) -> None:
     """Test POST /predict 3 cas valides (3 avis issu de sample_reviews) => code 200 + sentiment_prevu OK"""
     response = getResponse(fixture_client, texte_test)
     # Assert status code 200 (OK)
