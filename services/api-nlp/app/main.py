@@ -26,7 +26,14 @@ from app.schemas import HealthOut, InfoOut, ReviewIn, SentimentOut
 # Pour debugger un cas complexe, repasse à diagnose=True ponctuellement.
 logger.remove()
 logger.add(sys.stderr, level="INFO", backtrace=False, diagnose=False)
-
+logger.add(
+    "logs/api.log",
+    rotation="5 MB",        # nouveau fichier dès que 10 Mo atteints
+    retention="7 days",     # garde 30 jours d'historique
+    compression="zip",       # compresse les fichiers archivés
+    level="INFO",            # ne logge pas les DEBUG dans ce fichier
+    enqueue=True            #(safe pour contextes async / multi-thread)
+)
 
 # --- Filtre access log uvicorn : on n'affiche pas les pings healthcheck ---
 # Sans ce filtre, le healthcheck Docker (toutes les 30 s) pollue les logs
@@ -134,8 +141,12 @@ def predict(payload: ReviewIn) -> SentimentOut:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Texte trop long (> {MAX_TEXT_LENGTH} caractères).",
         )
-
-    # TODO Tâche 3 — Appeler inference.predict_sentiment(). (logging: task 5)
-    # Pour l'instant, on signale que ce n'est pas implémenté.
-    return inference.predict_sentiment(state["pipeline"], payload.texte, MODEL_NAME)
+    
+    predict = inference.predict_sentiment(state["pipeline"], payload.texte, MODEL_NAME)
+    logger.info(
+        f"avis : \"{payload.texte[:80]}\", "
+        f"sentiment prédit : {predict.sentiment}, "
+        f"latence : {predict.latence_ms} ms"
+        )
+    return predict
     
