@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "2 stars": 0.40947,
+      "1 star": 0.4022,
+      "3 stars": 0.15118,
+      "4 stars": 0.02694,
+      "5 stars": 0.01022
+    }
+  },
+  {
+    "id": 2,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "5 stars": 0.52839,
+      "4 stars": 0.43006,
+      "3 stars": 0.03791,
+      "2 stars": 0.00279,
+      "1 star": 0.00085
+    }
+  },
+  {
+    "id": 3,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "3 stars": 0.77374,
+      "2 stars": 0.12405,
+      "4 stars": 0.0916,
+      "1 star": 0.00719,
+      "5 stars": 0.00342
+    }
+  },
+  {
+    "id": 4,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "3 stars": 0.43805,
+      "2 stars": 0.40383,
+      "1 star": 0.07952,
+      "4 stars": 0.07,
+      "5 stars": 0.0086
+    }
+  },
+  {
+    "id": 5,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "3 stars": 0.3222,
+      "2 stars": 0.26273,
+      "4 stars": 0.22878,
+      "1 star": 0.10619,
+      "5 stars": 0.08011
+    }
+  },
+  {
+    "id": 6,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "5 stars": 0.79053,
+      "4 stars": 0.19419,
+      "3 stars": 0.0127,
+      "2 stars": 0.00168,
+      "1 star": 0.00091
+    }
+  },
+  {
+    "id": 7,
+    "attendu": "positif",
+    "note_client": 4,
+    "scores_5_stars": {
+      "3 stars": 0.66786,
+      "2 stars": 0.18978,
+      "4 stars": 0.1132,
+      "1 star": 0.01801,
+      "5 stars": 0.01116
+    }
+  },
+  {
+    "id": 8,
+    "attendu": "négatif",
+    "note_client": 2,
+    "scores_5_stars": {
+      "3 stars": 0.36159,
+      "2 stars": 0.35408,
+      "4 stars": 0.14744,
+      "1 star": 0.09933,
+      "5 stars": 0.03756
+    }
+  },
+  {
+    "id": 9,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "4 stars": 0.54528,
+      "5 stars": 0.35368,
+      "3 stars": 0.09308,
+      "2 stars": 0.00659,
+      "1 star": 0.00137
+    }
+  },
+  {
+    "id": 10,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "1 star": 0.87782,
+      "2 stars": 0.1128,
+      "3 stars": 0.00796,
+      "4 stars": 0.00074,
+      "5 stars": 0.00068
+    }
+  },
+  {
+    "id": 11,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "5 stars": 0.93381,
+      "4 stars": 0.06229,
+      "3 stars": 0.00231,
+      "1 star": 0.00104,
+      "2 stars": 0.00056
+    }
+  },
+  {
+    "id": 12,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "4 stars": 0.50827,
+      "5 stars": 0.39504,
+      "3 stars": 0.08836,
+      "2 stars": 0.00662,
+      "1 star": 0.00172
+    }
+  },
+  {
+    "id": 13,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "3 stars": 0.65958,
+      "2 stars": 0.18188,
+      "4 stars": 0.13369,
+      "1 star": 0.01366,
+      "5 stars": 0.0112
+    }
+  },
+  {
+    "id": 14,
+    "attendu": "positif",
+    "note_client": 4,
+    "scores_5_stars": {
+      "5 stars": 0.52814,
+      "4 stars": 0.42491,
+      "3 stars": 0.04203,
+      "2 stars": 0.00372,
+      "1 star": 0.0012
+    }
+  },
+  {
+    "id": 15,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "2 stars": 0.39405,
+      "1 star": 0.25887,
+      "3 stars": 0.23304,
+      "4 stars": 0.08149,
+      "5 stars": 0.03255
+    }
+  },
+  {
+    "id": 16,
+    "attendu": "positif",
+    "note_client": 4,
+    "scores_5_stars": {
+      "4 stars": 0.67453,
+      "3 stars": 0.18167,
+      "5 stars": 0.13263,
+      "2 stars": 0.01019,
+      "1 star": 0.00099
+    }
+  },
+  {
+    "id": 17,
+    "attendu": "négatif",
+    "note_client": 2,
+    "scores_5_stars": {
+      "2 stars": 0.31878,
+      "3 stars": 0.29739,
+      "1 star": 0.19193,
+      "4 stars": 0.11379,
+      "5 stars": 0.07811
+    }
+  },
+  {
+    "id": 18,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "2 stars": 0.48861,
+      "3 stars": 0.45225,
+      "1 star": 0.04772,
+      "4 stars": 0.01064,
+      "5 stars": 0.00079
+    }
+  },
+  {
+    "id": 19,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "2 stars": 0.55125,
+      "1 star": 0.35662,
+      "3 stars": 0.08695,
+      "4 stars": 0.00394,
+      "5 stars": 0.00123
+    }
+  },
+  {
+    "id": 20,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "4 stars": 0.47806,
+      "5 stars": 0.42242,
+      "3 stars": 0.09078,
+      "2 stars": 0.00717,
+      "1 star": 0.00157
+    }
+  },
+  {
+    "id": 21,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "3 stars": 0.76585,
+      "2 stars": 0.14046,
+      "4 stars": 0.08095,
+      "1 star": 0.00926,
+      "5 stars": 0.00348
+    }
+  },
+  {
+    "id": 22,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "4 stars": 0.48105,
+      "5 stars": 0.38876,
+      "3 stars": 0.10693,
+      "2 stars": 0.01752,
+      "1 star": 0.00573
+    }
+  },
+  {
+    "id": 23,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "1 star": 0.75579,
+      "2 stars": 0.22507,
+      "3 stars": 0.01649,
+      "5 stars": 0.0014,
+      "4 stars": 0.00125
+    }
+  },
+  {
+    "id": 24,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "5 stars": 0.60641,
+      "4 stars": 0.37082,
+      "3 stars": 0.02039,
+      "2 stars": 0.00173,
+      "1 star": 0.00065
+    }
+  },
+  {
+    "id": 25,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "3 stars": 0.56716,
+      "2 stars": 0.26034,
+      "4 stars": 0.12329,
+      "1 star": 0.03312,
+      "5 stars": 0.01608
+    }
+  },
+  {
+    "id": 26,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "1 star": 0.44312,
+      "2 stars": 0.33364,
+      "3 stars": 0.13975,
+      "5 stars": 0.04343,
+      "4 stars": 0.04006
+    }
+  },
+  {
+    "id": 27,
+    "attendu": "positif",
+    "note_client": 4,
+    "scores_5_stars": {
+      "4 stars": 0.50935,
+      "3 stars": 0.39789,
+      "5 stars": 0.07325,
+      "2 stars": 0.01764,
+      "1 star": 0.00187
+    }
+  },
+  {
+    "id": 28,
+    "attendu": "neutre",
+    "note_client": 3,
+    "scores_5_stars": {
+      "3 stars": 0.58907,
+      "2 stars": 0.2628,
+      "4 stars": 0.11655,
+      "1 star": 0.02238,
+      "5 stars": 0.00919
+    }
+  },
+  {
+    "id": 29,
+    "attendu": "positif",
+    "note_client": 5,
+    "scores_5_stars": {
+      "5 stars": 0.89158,
+      "4 stars": 0.0992,
+      "3 stars": 0.00619,
+      "1 star": 0.00158,
+      "2 stars": 0.00145
+    }
+  },
+  {
+    "id": 30,
+    "attendu": "négatif",
+    "note_client": 1,
+    "scores_5_stars": {
+      "1 star": 0.91169,
+      "2 stars": 0.07774,
+      "3 stars": 0.00812,
+      "4 stars": 0.00133,
+      "5 stars": 0.00113
+    }
+  }
+]
