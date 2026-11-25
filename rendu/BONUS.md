@@ -77,3 +77,38 @@ Pas de fausse alerte.
 
 La règle que j'avais choisi est correcte vu qu'elle arrive à miniser les négatifs manqués.
 
+
+## G — « Pourquoi pas un LLM généraliste ? »
+
+
+## F — Endpoint `/predict/batch`
+#### Mesure des durées des différents predict
+On utilise le script rendu/mesure_predict_batch.py qu'on lance depuis la racine du repo, stack démarrée. 
+
+```bash
+python .\rendu\mesure_predict_batch.py
+Temps pour 30 avis avec /predict = 2678.258000058122 ms
+Temps pour 30 avis avec /predict/batch = 634.3099999940023 ms
+Temps pour 30 avis avec /predict/batchV2 = 669.3268000381067 ms
+
+python .\rendu\mesure_predict_batch.py
+Temps pour 30 avis avec /predict = 1512.2090999502689 ms
+Temps pour 30 avis avec /predict/batch = 523.2733000302687 ms
+Temps pour 30 avis avec /predict/batchV2 = 553.4031999995932 ms
+
+python .\rendu\mesure_predict_batch.py
+Temps pour 30 avis avec /predict = 1653.3335000276566 ms
+Temps pour 30 avis avec /predict/batch = 676.6191000351682 ms
+Temps pour 30 avis avec /predict/batchV2 = 535.171499941498 ms
+```
+
+Médianes :
+- /predict :  1653.3335000276566 ms
+- /predict/batch : 634.3099999940023 ms
+- /predict/batchV2 : 553.4031999995932 ms
+
+Le /predict est plus long car il lance 30 appels à l'API, ainsi qu'à CamemBERT, ce qui met plus de temps.
+Les deux autres ont un temps similaires.
+
+
+## E — Healthcheck dimensionné sur la réalité

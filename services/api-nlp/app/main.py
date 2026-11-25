@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+import time
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -17,7 +18,7 @@ from fastapi import FastAPI, HTTPException, status
 from loguru import logger
 
 from app import inference
-from app.schemas import HealthOut, InfoOut, ReviewIn, SentimentOut
+from app.schemas import HealthOut, InfoOut, ReviewIn, SentimentOut, BatchOut, BatchIn
 
 
 # --- Configuration Loguru (compact, lisible pour des apprenants) ---
@@ -150,3 +151,61 @@ def predict(payload: ReviewIn) -> SentimentOut:
         )
     return predict
     
+
+@app.post("/predict/batch", response_model=BatchOut, status_code=status.HTTP_200_OK)
+def predict_batch(payload: BatchIn) -> BatchOut:
+    t0 = time.perf_counter()
+    listeSentiments = []
+    for texte in payload.textes:
+        if len(texte) > MAX_TEXT_LENGTH:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"L'un des textes est trop long (> {MAX_TEXT_LENGTH} caractères).",
+            )
+        if len(texte)<1 :
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"L'un des textes est vide",
+            )
+        if not texte.strip():            
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"L'un des textes est uniquement fait d'espaces",
+            )
+        predict = inference.predict_sentiment(state["pipeline"], texte, MODEL_NAME)
+        listeSentiments.append(predict)
+    tps_inf_tot = (time.perf_counter() - t0)*1000 #en ms
+    return BatchOut(
+        liste_sentiments = listeSentiments,
+        latence_totale_ms = tps_inf_tot
+    )
+
+@app.post("/predict/batchV2", response_model=BatchOut, status_code=status.HTTP_200_OK)
+def predict_batch_v2(payload: BatchIn) -> BatchOut:    
+    t0 = time.perf_counter()
+    listeSentiments = []
+    
+    for texte in payload.textes:
+        if len(texte) > MAX_TEXT_LENGTH:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"L'un des textes est trop long (> {MAX_TEXT_LENGTH} caractères).",
+            )
+        if len(texte)<1 :
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"L'un des textes est vide",
+            )
+        if not texte.strip():            
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"L'un des textes est uniquement fait d'espaces",
+            )
+
+    listeSentiments=inference.predict_sentiment_liste_textes(state["pipeline"],payload.textes,MODEL_NAME)
+
+    tps_inf_tot = (time.perf_counter() - t0)*1000 #en ms
+    return BatchOut(
+        liste_sentiments = listeSentiments,
+        latence_totale_ms = tps_inf_tot
+    )    

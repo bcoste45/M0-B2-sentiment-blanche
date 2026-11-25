@@ -80,3 +80,21 @@ class InfoOut(BaseModel):
         examples=[["négatif", "neutre", "positif"]],
     )
     max_text_length: int
+
+
+class BatchIn(BaseModel):
+#    BatchIn : un champ textes, liste de 1 à 32 textes, chacun avec les mêmes règles que ReviewIn 
+# (non vide, pas uniquement des espaces, au plus MAX_TEXT_LENGTH) ;
+    print("")#conlist?
+    textes: list[str] = Field(
+        ...,
+        min_length=1, 
+        max_length=32,
+        description="liste de 1 à 32 textes (non vide, pas uniquement des espaces, au plus MAX_TEXT_LENGTH)"
+    )
+
+class BatchOut(BaseModel):
+#    BatchOut : la liste des SentimentOut, dans le même ordre que l'entrée, 
+# plus la latence totale.
+    liste_sentiments : list[SentimentOut] = Field(...)
+    latence_totale_ms: float 

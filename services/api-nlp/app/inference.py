@@ -70,7 +70,6 @@ def predict_sentiment(pipeline: Any, text: str, model_name: str) -> SentimentOut
     """
     t0 = time.perf_counter()
     raw = pipeline(text)
-    tps_inf = (time.perf_counter() - t0)*1000 #en ms
 
     scores_5_stars = {}
     sentiments = {"négatif":0,"neutre":0,"positif":0}
@@ -78,9 +77,29 @@ def predict_sentiment(pipeline: Any, text: str, model_name: str) -> SentimentOut
         scores_5_stars[l['label']] = round(l['score'],5)
         sentiments[map_stars_to_sentiment(l['label'])] += round(l['score'],5)
 
+    tps_inf = (time.perf_counter() - t0)*1000 #en ms
     return SentimentOut(
         sentiment= max(sentiments, key=sentiments.get),
         scores_5_stars=scores_5_stars,
         model_name=model_name,
         latence_ms=tps_inf
     )
+
+def predict_sentiment_liste_textes(pipeline: Any, textes:list[str], model_name: str)-> list[SentimentOut]:
+    listeSentimentOut = []
+    raw = pipeline(textes)
+    for a in raw:
+        t0 = time.perf_counter()
+        scores_5_stars = {}
+        sentiments = {"négatif":0,"neutre":0,"positif":0}
+        for l in a:
+            scores_5_stars[l['label']] = round(l['score'],5)
+            sentiments[map_stars_to_sentiment(l['label'])] += round(l['score'],5)
+        s = SentimentOut(
+            sentiment= max(sentiments, key=sentiments.get),
+            scores_5_stars=scores_5_stars,
+            model_name=model_name,
+            latence_ms=(time.perf_counter() - t0)*1000 #en ms
+        )
+        listeSentimentOut.append(s)
+    return listeSentimentOut
